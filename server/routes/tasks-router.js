@@ -91,10 +91,10 @@ router.route('/tasks/:taskId')
         try {
             // Parse request
             const { taskId } = req.params;
-            const { title, description } = req.body;
+            const { title, description, completed } = req.body;
 
             // Query database
-            const updatedTask = await db.updateTaskForUser(null, taskId, title, description);
+            const updatedTask = await db.updateTaskForUser(null, taskId, title, description, completed);
 
             // Send results
             if (!!updatedTask) {

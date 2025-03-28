@@ -33,9 +33,9 @@ Server for the back-end of the app.
 ### PUT /tasks/:taskId
 | Test Case | Expected Result |
 | --- | --- |
-| Request taskId, provide title and description | Specified task is updated with new title and description and is returned |
-| Request taskId, provide only title | Specified task is updated with new title, null description, and is returned |
-| Request taskId, don't provide title | Error message returned |
+| Request taskId, provide, description, completed status | Specified task is updated with new title, description, completed status and is returned |
+| Request taskId, provide only title and completed status | Specified task is updated with new title, null description, new completed status, and is returned |
+| Request taskId, don't provide title or don't provide completed status | Error message returned |
 | Request taskId not in database | Error message returned |
 
 ### DELETE /tasks/:taskId

@@ -49,7 +49,7 @@ const getTaskList = async (userId) => {
 /**
  * Get one of a user's tasks.
  * @param {*} userId - Make sure the task belongs to this user.
- * @param {*} taskId - ID of the task.
+ * @param {string} taskId - ID of the task.
  * @returns The task.
  * @throws Throws errors related to database queries.
  */
@@ -61,21 +61,22 @@ const getTaskForUser = async (userId, taskId) => {
 /**
  * Update one of a user's tasks.
  * @param {*} userId 
- * @param {*} taskId 
- * @param {*} title - Should not be null. Pass in the old value even if it is unchanged.
- * @param {*} description - If set to null, the database will also be set to null.
+ * @param {string} taskId 
+ * @param {string} title - Should not be null. Pass in the old value even if it is unchanged.
+ * @param {string} description - Pass in old value if it should not change.
+ * @param {boolean} completed - Pass in old value if it should not change.
  * @returns The updated task.
  * @throws Throws errors related to database queries.
  */
-const updateTaskForUser = async (userId, taskId, title, description) => {
-    const queryResult = await poolQuery('UPDATE tasks SET title=$1,description=$2 WHERE task_id=$3 RETURNING *', [title, description, taskId]);
+const updateTaskForUser = async (userId, taskId, title, description, completed) => {
+    const queryResult = await poolQuery('UPDATE tasks SET title=$1,description=$2,completed=$3 WHERE task_id=$4 RETURNING *', [title, description, completed, taskId]);
     return queryResult.rows[0];
 }
 
 /**
  * Delete a task.
  * @param {*} userId 
- * @param {*} taskId 
+ * @param {string} taskId 
  * @returns The deleted task.
  * @throws Throws errors related to database queries.
  */
@@ -87,7 +88,7 @@ const deleteTask = async (userId, taskId) => {
 /**
  * Mark task completion.
  * @param {*} userId 
- * @param {*} taskId 
+ * @param {string} taskId 
  * @param {boolean} isCompleted
  * @returns The updated task.
  * @throws Throws errors related to database queries.
