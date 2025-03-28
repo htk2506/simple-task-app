@@ -6,3 +6,8 @@ The script was created as a schema backup generated from this command:
 
 To use the script to build the database:
 > psql -U \<user (postgres)> -f create_database.sql
+
+The server's access to the database is done through the POSTGRES_URI environment variable of the form:
+> POSTGRES_URI=postgres://{username}:{password}@{hostname}:{port}/{database}
+
+When deploying the Postgres database with Fly.io, but using the server elsewhere, you need to [enable external connections](https://fly.io/docs/postgres/connecting/connecting-external/) for the Postgres app. 

@@ -22,7 +22,7 @@ DROP DATABASE simple_task_app;
 -- Name: simple_task_app; Type: DATABASE; Schema: -; Owner: postgres
 --
 
-CREATE DATABASE simple_task_app WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc LOCALE = 'en-US';
+CREATE DATABASE simple_task_app WITH TEMPLATE = template0 ENCODING = 'UTF8' LOCALE_PROVIDER = libc; -- LOCALE = 'en-US';
 
 
 ALTER DATABASE simple_task_app OWNER TO postgres;
