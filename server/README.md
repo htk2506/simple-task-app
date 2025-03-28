@@ -1,9 +1,13 @@
 
 # simple-task-app-server
-Server for the back-end of the app.
+A server for the back-end of the app written with Node JS and the Express framework.
 * routes/tasks-router.js - Routes for handling task requests.
-* index.js - Creates the Express server.
+* index.js - Entry point that starts the Express server.
 * db.js - Provides functions for database interactions.
+* sample.env - Describes the environment variables that need to be configured 
+
+To run the server, set the necessary environment variables and run:
+> node index.js
 
 ## Route  Test Cases (TODO: automate)
 
