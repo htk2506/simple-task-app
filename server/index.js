@@ -22,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(tasksRouter);
 
 // Start the server
-const serverPort = process.env.SERVER_PORT || 3000;
+const serverPort = process.env.SERVER_PORT || 5000;
 app.listen(serverPort, () => {
     console.log(`Server started on port ${serverPort}`)
 });
