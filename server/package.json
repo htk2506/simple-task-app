@@ -4,7 +4,7 @@
   "description": "Backend for a simple task app",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "htk2506",
