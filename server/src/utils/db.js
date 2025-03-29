@@ -3,10 +3,10 @@
  */
 
 require('dotenv').config();
+const pg = require('pg');
 
 // Create the pool
-const Pool = require('pg').Pool;
-const pool = new Pool({ connectionString: process.env.POSTGRES_URI });
+const pool = new pg.Pool({ connectionString: process.env.POSTGRES_URI });
 
 /**
  * Use a pg pool to query the database. Returns a Promise for the result.

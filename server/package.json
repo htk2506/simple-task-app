@@ -1,9 +1,10 @@
 {
   "name": "simple-task-app-server",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "description": "Backend for a simple task app",
   "main": "index.js",
   "scripts": {
+    "start": "node src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "htk2506",
@@ -14,5 +15,8 @@
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "pg": "^8.14.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.9"
   }
 }

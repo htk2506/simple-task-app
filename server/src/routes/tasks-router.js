@@ -5,7 +5,7 @@
 // Import modules
 require('dotenv').config();
 const express = require('express');
-const db = require('../db');
+const db = require('../utils/db');
 
 // Create the router
 const router = express.Router();
