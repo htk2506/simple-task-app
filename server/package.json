@@ -15,5 +15,8 @@
     "express": "^4.21.2",
     "helmet": "^8.1.0",
     "pg": "^8.14.0"
+  },
+  "devDependencies": {
+    "@flydotio/dockerfile": "^0.7.9"
   }
 }
