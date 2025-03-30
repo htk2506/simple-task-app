@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import EditTask from "./EditTask";
 
 function ListTasks() {
     const [tasks, setTasks] = useState([]);
@@ -24,10 +25,10 @@ function ListTasks() {
         }
     }
 
-    // Make DELETE request to the /tasks/:taskId route
-    const deleteTask = async (taskId) => {
+    // Make DELETE request to the /tasks/:Id route
+    const deleteTask = async (id) => {
         try {
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${taskId}`;
+            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${id}`;
             const response = await fetch(url, { method: "DELETE" });
             const responseJson = await response.json();
 
@@ -36,7 +37,7 @@ function ListTasks() {
             // Handle server response
             if (response.ok) {
                 // Remove the deleted task from the list
-                setTasks(tasks.filter(task => task.task_id !== taskId));
+                setTasks(tasks.filter(task => task.task_id !== id));
             } else {
                 // TODO: Handle server error
             }
@@ -65,23 +66,25 @@ function ListTasks() {
                 </thead>
 
                 <tbody>
-                    {tasks.map(task => (
-                        <tr key={task.task_id}>
-                            <td>{task.title}</td>
-                            <td>{task.description}</td>
-                            <td>
-                                {/* <EditTodo task={task} /> */}
-                            </td>
-                            <td>
-                                <button
-                                    className="btn btn-danger"
-                                    onClick={() => deleteTask(task.task_id)}
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
+                    {tasks
+                        .sort((a, b) => a.title.localeCompare(b.title))
+                        .map(task => (
+                            <tr key={task.task_id}>
+                                <td>{task.title}</td>
+                                <td>{task.description}</td>
+                                <td>
+                                    <EditTask task={task} />
+                                </td>
+                                <td>
+                                    <button
+                                        className="btn btn-danger"
+                                        onClick={() => deleteTask(task.task_id)}
+                                    >
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
 
                 </tbody>
             </table>

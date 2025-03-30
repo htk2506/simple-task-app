@@ -28,7 +28,7 @@ function InputTask() {
             // Handle server response
             if (response.ok) {
                 // Now refresh
-                window.location = "/";
+                window.location.reload();
             } else {
                 // TODO: Handle error from server
             }
