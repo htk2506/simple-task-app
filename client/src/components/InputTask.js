@@ -40,7 +40,7 @@ function InputTask() {
         <div className="input-task mx-5">
             <h1>Input Task</h1>
             <form onSubmit={onSubmitForm}>
-                <label for="new-task-title-input" class="form-label">Title</label>
+                <label htmlFor="new-task-title-input" className="form-label">Title</label>
                 <input
                     id="new-task-title-input"
                     type="text"
@@ -50,7 +50,7 @@ function InputTask() {
                     className="form-control"
                 />
 
-                <label for="new-task-description-input" class="form-label">Description</label>
+                <label htmlFor="new-task-description-input" className="form-label">Description</label>
                 <textarea
                     id="new-task-description-input"
                     type="text"
