@@ -11,6 +11,7 @@ function InputTask() {
         if (!title) { return; }
 
         try {
+            // POST request to the /tasks route
             const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks`;
             const body = { title, description };
             const response = await fetch(url, {
