@@ -8,6 +8,8 @@ function InputTask() {
     const onSubmitForm = async (e) => {
         // Prevent refresh
         e.preventDefault();
+
+        // Don't submit empty string for title
         if (!title) { return; }
 
         try {
@@ -23,11 +25,12 @@ function InputTask() {
             console.log(response);
             console.log(responseJson)
 
+            // Handle server response
             if (response.ok) {
-                setTitle("");
-                setDescription("");
+                // Now refresh
+                window.location = "/";
             } else {
-
+                // TODO: Handle error from server
             }
 
         } catch (err) {
@@ -37,8 +40,8 @@ function InputTask() {
 
     // Return the component
     return (
-        <div className="input-task mx-5">
-            <h1>Input Task</h1>
+        <div className="input-task mt-5">
+            <h2>Input New Task</h2>
             <form onSubmit={onSubmitForm}>
                 <label htmlFor="new-task-title-input" className="form-label">Title</label>
                 <input
