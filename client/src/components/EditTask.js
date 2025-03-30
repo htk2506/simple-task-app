@@ -34,11 +34,11 @@ function EditTask({ task }) {
                 // Refresh
                 window.location.reload();
             } else {
-                // TODO: Handle server error
+                alert(response);
             }
-
         } catch (err) {
             console.error(err.message);
+            alert(err.message);
         }
     };
 

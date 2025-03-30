@@ -30,11 +30,12 @@ function InputTask() {
                 // Now refresh
                 window.location.reload();
             } else {
-                // TODO: Handle error from server
+                alert(response);
             }
 
         } catch (err) {
             console.error(err.message);
+            alert(err.message);
         }
     }
 

@@ -17,11 +17,11 @@ function ListTasks() {
             if (response.ok) {
                 setTasks(responseJson);
             } else {
-                // TODO: Handle server error
+                alert(response);
             }
-
         } catch (err) {
             console.error(err.message);
+            alert(err.message);
         }
     }
 
@@ -39,10 +39,11 @@ function ListTasks() {
                 // Remove the deleted task from the list
                 setTasks(tasks.filter(task => task.task_id !== id));
             } else {
-                // TODO: Handle server error
+                alert(response);
             }
         } catch (err) {
             console.error(err.message);
+            alert(err.message);
         }
     }
 
