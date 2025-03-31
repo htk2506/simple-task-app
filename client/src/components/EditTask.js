@@ -54,11 +54,11 @@ function EditTask({ task }) {
                 Edit
             </button>
 
-
             <div
                 className="modal"
                 id={modalId}
-                onClick={() => discardEdits()}
+                data-bs-backdrop="static"
+                data-bs-keyboard="false"
             >
                 <div className="modal-dialog">
                     <div className="modal-content">
@@ -74,12 +74,40 @@ function EditTask({ task }) {
                         </div>
 
                         <div className="modal-body">
+
+                            <label htmlFor="task-title-input" className="form-label">Title</label>
                             <input
+                                id="task-title-input"
                                 type="text"
-                                className="form-control"
                                 value={title}
                                 onChange={e => setTitle(e.target.value)}
+                                placeholder="Task Title"
+                                className="form-control"
                             />
+
+                            <label htmlFor="task-description-input" className="form-label">Description</label>
+                            <textarea
+                                id="task-description-input"
+                                type="text"
+                                value={description}
+                                onChange={e => setDescription(e.target.value)}
+                                placeholder="Task Description"
+                                className="form-control"
+                            >
+                            </textarea>
+
+                            <div className="form-group">
+                                <input
+                                    type="checkbox"
+                                    className="form-check-input"
+                                    id="task-completed-checkbox"
+                                    defaultChecked={completed}
+                                    onChange={(e) => setCompleted(e.target.checked)}
+                                />
+                                <label className="form-check-label" for="task-completed-checkbox">
+                                    Completed
+                                </label>
+                            </div>
                         </div>
 
                         <div className="modal-footer">

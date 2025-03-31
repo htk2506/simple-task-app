@@ -3,6 +3,7 @@ import EditTask from "./EditTask";
 
 function ListTasks() {
     const [tasks, setTasks] = useState([]);
+    const [hideCompleted, setHideCompleted] = useState(false);
 
     // Make GET request to the /tasks route
     const getTasks = async () => {
@@ -76,6 +77,20 @@ function ListTasks() {
     return (
         <div className="list-tasks mt-5">
             <h2>Tasks</h2>
+
+            <div className="form-group justify-content-start align-items-start">
+                <input
+                    type="checkbox"
+                    className="form-check-input"
+                    id="hide-completed-checkbox"
+                    checkedDefault={hideCompleted}
+                    onChange={(e) => setHideCompleted(e.target.checked)}
+                />
+                <label className="form-check-label" for="hide-completed-checkbox">
+                    Hide completed tasks
+                </label>
+            </div>
+
             <table className="table text-center">
                 <thead>
                     <tr>
@@ -89,8 +104,12 @@ function ListTasks() {
 
                 <tbody>
                     {tasks
-                        .filter(e => {
-                            return e;
+                        .filter(task => {
+                            if (hideCompleted) {
+                                return !task.completed;
+                            } else {
+                                return true;
+                            }
                         })
                         .sort((a, b) => a.title.localeCompare(b.title))
                         .map(task => (
