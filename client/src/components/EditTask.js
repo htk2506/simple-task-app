@@ -28,13 +28,13 @@ function EditTask({ task }) {
                     body: JSON.stringify(body)
                 }
             );
-            const responseJson = await response.json();
 
             if (response.ok) {
                 // Refresh
                 window.location.reload();
             } else {
-                alert(response);
+                const responseText = await response.text();
+                alert(responseText);
             }
         } catch (err) {
             console.error(err.message);

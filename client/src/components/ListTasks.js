@@ -17,7 +17,8 @@ function ListTasks() {
             if (response.ok) {
                 setTasks(responseJson);
             } else {
-                alert(response);
+                const responseText = await response.text();
+                alert(responseText);
             }
         } catch (err) {
             console.error(err.message);
@@ -30,16 +31,35 @@ function ListTasks() {
         try {
             const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${id}`;
             const response = await fetch(url, { method: "DELETE" });
-            const responseJson = await response.json();
-
-            console.log(responseJson);
 
             // Handle server response
             if (response.ok) {
                 // Remove the deleted task from the list
                 setTasks(tasks.filter(task => task.task_id !== id));
             } else {
-                alert(response);
+                const responseText = await response.text();
+                alert(responseText);
+            }
+        } catch (err) {
+            console.error(err.message);
+            alert(err.message);
+        }
+    }
+
+    // Update the completion of a task
+    const updateTaskCompletion = async (e, id) => {
+        try {
+            const completed = e.target.checked;
+            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${id}/completion?completed=${completed}`;
+            const response = await fetch(url, { method: "PUT" });
+
+            // Handle server response
+            if (response.ok) {
+                // Refresh
+                window.location.reload();
+            } else {
+                const responseText = await response.text();
+                alert(responseText);
             }
         } catch (err) {
             console.error(err.message);
@@ -61,6 +81,7 @@ function ListTasks() {
                     <tr>
                         <th>Title</th>
                         <th>Description</th>
+                        <th>Completed</th>
                         <th>Edit</th>
                         <th>Delete</th>
                     </tr>
@@ -68,11 +89,22 @@ function ListTasks() {
 
                 <tbody>
                     {tasks
+                        .filter(e => {
+                            return e;
+                        })
                         .sort((a, b) => a.title.localeCompare(b.title))
                         .map(task => (
                             <tr key={task.task_id}>
                                 <td>{task.title}</td>
                                 <td>{task.description}</td>
+                                <td>
+                                    <input
+                                        type="checkbox"
+                                        className="form-check-input"
+                                        defaultChecked={task.completed}
+                                        onChange={(e) => updateTaskCompletion(e, task.task_id)}
+                                    />
+                                </td>
                                 <td>
                                     <EditTask task={task} />
                                 </td>

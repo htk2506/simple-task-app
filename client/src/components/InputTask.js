@@ -21,16 +21,14 @@ function InputTask() {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(body)
             });
-            const responseJson = await response.json();
-            console.log(response);
-            console.log(responseJson)
 
             // Handle server response
             if (response.ok) {
                 // Now refresh
                 window.location.reload();
             } else {
-                alert(response);
+                const responseText = await response.text();
+                alert(responseText);
             }
 
         } catch (err) {
