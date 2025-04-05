@@ -1,6 +1,6 @@
 FROM node:18
 
-WORKDIR /server
+WORKDIR /client
 
 # Copy and install depencencies
 COPY package.json package.json
@@ -9,13 +9,13 @@ RUN npm ci
 
 # Copy source code
 COPY ./src ./src
+COPY ./public ./public
 
 # Production 
 ENV NODE_ENV="production"
 
-# Use port 5000
-ENV SERVER_PORT=5000
-EXPOSE 5000
+# Use port 3000
+EXPOSE 3000
 
-# Run the server
-CMD ["node", "src/index.js"]
+# Run the client
+CMD ["npm", "run", "start"]
