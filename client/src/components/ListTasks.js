@@ -8,7 +8,7 @@ function ListTasks() {
     // Make GET request to the /tasks route
     const getTasks = async () => {
         try {
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks`;
+            const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks`;
             const response = await fetch(url);
             const responseJson = await response.json();
 
@@ -30,7 +30,7 @@ function ListTasks() {
     // Make DELETE request to the /tasks/:Id route
     const deleteTask = async (id) => {
         try {
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${id}`;
+            const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${id}`;
             const response = await fetch(url, { method: "DELETE" });
 
             // Handle server response
@@ -51,7 +51,7 @@ function ListTasks() {
     const updateTaskCompletion = async (e, id) => {
         try {
             const completed = e.target.checked;
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${id}/completion?completed=${completed}`;
+            const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${id}/completion?completed=${completed}`;
             const response = await fetch(url, { method: "PUT" });
 
             // Handle server response

@@ -14,7 +14,7 @@ function InputTask() {
 
         try {
             // POST request to the /tasks route
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks`;
+            const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks`;
             const body = { title, description };
             const response = await fetch(url, {
                 method: "POST",

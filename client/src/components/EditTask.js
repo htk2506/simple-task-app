@@ -18,7 +18,7 @@ function EditTask({ task }) {
     const updateTask = async e => {
         e.preventDefault();
         try {
-            const url = `${process.env.REACT_APP_SERVER_BASE_URL}/tasks/${task.task_id}`;
+            const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${task.task_id}`;
             const body = { title, description, completed };
             const response = await fetch(
                 url,
