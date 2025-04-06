@@ -5,3 +5,6 @@ The [client](/client), [server](/server), and [database](/database) are each des
 
 ## References
 * freeCodeCamp's [PERN Stack Course](https://www.youtube.com/watch?v=ldYcgPKEZC8)
+* freeCodeCamp's [Passport Tutorial](https://www.youtube.com/watch?v=F-sFp_AvHc8)
+* Passport's [Google Authentication Tutorial](https://www.passportjs.org/tutorials/google/)
+

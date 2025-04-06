@@ -24,7 +24,7 @@ const poolQuery = (text, params, callback) => {
 
 /**
  * Insert a task to the database.
- * @param {*} userId 
+ * @param {string} userId 
  * @param {string} title 
  * @param {string} description 
  * @returns {Promise} Task that was inserted. 
@@ -37,7 +37,7 @@ const insertTask = async (userId, title, description) => {
 
 /**
  * Get all of a user's tasks.
- * @param {*} userId 
+ * @param {string} userId 
  * @returns Array of objects representing user's tasks.
  * @throws Throws errors related to database queries.
  */
@@ -48,7 +48,7 @@ const getTaskList = async (userId) => {
 
 /**
  * Get one of a user's tasks.
- * @param {*} userId - Make sure the task belongs to this user.
+ * @param {string} userId - Make sure the task belongs to this user.
  * @param {string} taskId - ID of the task.
  * @returns The task.
  * @throws Throws errors related to database queries.
@@ -60,7 +60,7 @@ const getTaskForUser = async (userId, taskId) => {
 
 /**
  * Update one of a user's tasks.
- * @param {*} userId 
+ * @param {string} userId 
  * @param {string} taskId 
  * @param {string} title - Should not be null. Pass in the old value even if it is unchanged.
  * @param {string} description - Pass in old value if it should not change.
@@ -75,7 +75,7 @@ const updateTaskForUser = async (userId, taskId, title, description, completed) 
 
 /**
  * Delete a task.
- * @param {*} userId 
+ * @param {string} userId 
  * @param {string} taskId 
  * @returns The deleted task.
  * @throws Throws errors related to database queries.
@@ -87,7 +87,7 @@ const deleteTask = async (userId, taskId) => {
 
 /**
  * Mark task completion.
- * @param {*} userId 
+ * @param {string} userId 
  * @param {string} taskId 
  * @param {boolean} isCompleted
  * @returns The updated task.
@@ -100,6 +100,7 @@ const markTaskCompletion = async (userId, taskId, isCompleted) => {
 
 // Export functions
 module.exports = {
+    pool,
     poolQuery,
     insertTask,
     getTaskList,
