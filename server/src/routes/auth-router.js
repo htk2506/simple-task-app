@@ -9,15 +9,12 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc')
 const db = require('../utils/db');
 
-// Create the router
-const router = express.Router();
-
 // Configure Passport
-passport.use(new GoogleStrategy({
+const googleStrategy = new GoogleStrategy({
     clientID: process.env.GOOGLE_AUTH_CLIENT_ID,
     clientSecret: process.env.GOOGLE_AUTH_CLIENT_SECRET,
     callbackURL: '/oauth2/redirect/google',
-    scope: ['profile']
+    scope: ['profile'],
 }, function verify(issuer, profile, cb) {
     // Query database for the user
     db.poolQuery('SELECT user_id,name FROM users WHERE google_id=$1', [profile.id])
@@ -49,7 +46,8 @@ passport.use(new GoogleStrategy({
             console.error(err);
             return cb(err);
         })
-}));
+});
+passport.use(googleStrategy);
 
 // Serialize the user as the id
 passport.serializeUser((user, cb) => {
@@ -70,41 +68,84 @@ passport.deserializeUser((userId, cb) => {
 });
 
 //#region routes
+// Create the router
+const router = express.Router();
+
 // Initiate login with Google authentication
 router.route('/login/google')
-    // GET route
-    .get(passport.authenticate('google'));
+    .get(async (req, res, next) => {
+        // Get the client's URL to redirect back to
+        const requestOrigin = req.get('host') || req.get('origin');
+        const redirectTo = requestOrigin ? `http://${requestOrigin}` : '/';
+
+        // Use the authenticator and pass the redirection URL
+        const authenticator = passport.authenticate('google', { state: { redirectTo } });
+        authenticator(req, res, next);
+    });
 
 // Redirect route used by Google authentication
 router.route('/oauth2/redirect/google')
     .get(passport.authenticate('google', {
-        successRedirect: '/login/me',
-        failureRedirect: '/login/me'
-    }));
-
-router.route('/login/me')
-    // GET test information
+        failureRedirect: '/login/failure'
+    }))
     .get(async (req, res) => {
-        if (req.isAuthenticated()) {
-            res.json(req.user);
-        } else {
-            res.send('You are not authenticated');
+        try {
+            // Redirect back to client
+            redirectTo = req.authInfo.state.redirectTo || '/';
+            res.redirect(redirectTo);
+        } catch (err) {
+            console.error(err)
+            res.status(500);
+            res.send(err.message);
+        }
+    });
+
+// Get user's info 
+router.route('/login/user-info')
+    .get(async (req, res) => {
+        try {
+            if (req.isAuthenticated()) {
+                res.status(200);
+                res.json(req.user);
+            } else {
+                res.status(401);
+                res.send('You are not authenticated');
+            }
+        }
+        catch (err) {
+            console.error(err);
+            res.status(500);
+            res.send(err.message);
         }
     });
 
 // Logout route
 router.route('/logout')
-    // GET route for logging out
     .get(async (req, res, next) => {
         req.logout(err => {
             if (err) {
                 console.error(err);
                 return next(err);
             }
-            // TODO: redirect to origin 
-            res.redirect('/login/me')
-        });
 
+            // Redirect back to client
+            const requestOrigin = req.get('host') || req.get('origin');
+            const redirectTo = requestOrigin ? `http://${requestOrigin}` : '/';
+            res.redirect(redirectTo);
+        });
+    });
+
+// Login failure
+router.route('/login/failure')
+    .get(async (req, res) => {
+        try {
+            res.status(401);
+            res.send('You are not authenticated');
+        } catch (err) {
+            console.error(err);
+            res.status(500);
+            res.send(err.message);
+        }
     });
 //#endregion
 
