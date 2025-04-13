@@ -2,8 +2,9 @@
 # simple-task-app-server
 A server for the back-end of the app written with Node JS and the Express framework.
 * src/index.js - Entry point that starts the Express server.
-* src/routes/tasks-router.js - Routes for handling task requests.
+* src/routes - Routes for handling task and authentication requests.
 * src/utils/db.js - Provides functions for database interactions.
+* src/utils/auth.js - Configures Passport for authentication.
 * sample.env - Describes the environment variables that need to be configured 
 
 To run the server, set the necessary environment variables and run:
