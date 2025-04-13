@@ -114,6 +114,49 @@ const markTaskCompletion = async (userId, taskId, isCompleted) => {
     return queryResult.rows[0];
 }
 
+/**
+ * Get a user.
+ * @param {string} userId
+ * @returns {Promise} The user.
+ * @throws Throws errors related to database queries.
+ */
+const getUser = async (userId) => {
+    const queryResult = await poolQuery(
+        'SELECT user_id,name FROM users WHERE user_id=$1',
+        [userId])
+
+    return queryResult.rows[0];
+}
+
+/**
+ * Get a user by Google ID.
+ * @param {string} googleId
+ * @returns {Promise} The user.
+ * @throws Throws errors related to database queries.
+ */
+const getUserWithGoogleId = async (googleId) => {
+    const queryResult = await poolQuery(
+        'SELECT user_id,name FROM users WHERE google_id=$1',
+        [googleId]);
+
+    return queryResult.rows[0];
+}
+
+/**
+ * Insert a new user with a Google ID.
+ * @param {string} name
+ * @param {string} googleId
+ * @returns {Promise} The user.
+ * @throws Throws errors related to database queries.
+ */
+const insertUserWithGoogleId = async (name, googleId) => {
+    const queryResult = await poolQuery(
+        'INSERT INTO users (name,google_id) VALUES ($1,$2) RETURNING user_id,name',
+        [name, googleId]);
+
+    return queryResult.rows[0];
+}
+
 // Export pool and functions
 module.exports = {
     pool,
@@ -123,5 +166,8 @@ module.exports = {
     getTask,
     updateTask,
     deleteTask,
-    markTaskCompletion
+    markTaskCompletion,
+    getUser,
+    getUserWithGoogleId,
+    insertUserWithGoogleId
 }
