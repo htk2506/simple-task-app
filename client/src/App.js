@@ -6,10 +6,10 @@ import ListTasks from './components/ListTasks';
 
 function App() {
 
-
   const [isAuth, setIsAuth] = useState(false);
-  // Make GET request to the /tasks route
+  const [userName, setUserName] = useState('');
 
+  // Make GET request to the /user-info route
   const getUserInfo = async () => {
     try {
       const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/user-info`;
@@ -19,12 +19,31 @@ function App() {
       if (response.ok) {
         const responseJson = await response.json();
         console.log(responseJson);
-
         setIsAuth(true);
+        setUserName(responseJson.name);
       } else if (response.status === 401) {
         setIsAuth(false);
       }
       else {
+        const responseText = await response.text();
+        alert(responseText);
+      }
+    } catch (err) {
+      console.error(err.message);
+      alert(err.message);
+    }
+  }
+
+  // Make GET request to /logout
+  const logout = async () => {
+    try {
+      const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/logout`;
+      const response = await fetch(url, { method: 'GET', credentials: 'include' });
+
+      // Handle server response
+      if (response.ok) {
+        setIsAuth(false);
+      } else {
         const responseText = await response.text();
         alert(responseText);
       }
@@ -43,6 +62,13 @@ function App() {
     return (
       <div className="App container">
         <h1>Simple Task App</h1>
+        <p>{`Welcome ${userName}`}</p>
+        <button
+          className="btn btn-danger"
+          onClick={() => logout()}
+        >
+          Logout
+        </button>
         <InputTask />
         <ListTasks />
       </div>
