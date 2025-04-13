@@ -20,7 +20,7 @@ const authRouter = require('./routes/auth-router');
 const app = express();
 
 // Middleware for whole app
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
