@@ -6,6 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const db = require('../utils/db');
+const { checkAuth } = require('../utils/auth');
 
 // Create the router
 const router = express.Router();
@@ -22,8 +23,11 @@ router.route('/')
 //#region '/tasks'
 router.route('/tasks')
     // POST a new task
-    .post(async (req, res) => {
+    .post(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { description, title } = req.body;
 
@@ -41,8 +45,11 @@ router.route('/tasks')
         }
     })
     // GET all tasks
-    .get(async (req, res) => {
+    .get(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Query database
             const tasks = await db.getTaskList(null);
 
@@ -61,8 +68,11 @@ router.route('/tasks')
 //#region '/tasks/:taskId'
 router.route('/tasks/:taskId')
     // GET specific task
-    .get(async (req, res) => {
+    .get(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+            
             // Parse request
             const { taskId } = req.params;
 
@@ -87,8 +97,11 @@ router.route('/tasks/:taskId')
         }
     })
     // PUT an update to specific task
-    .put(async (req, res) => {
+    .put(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+            
             // Parse request
             const { taskId } = req.params;
             const { title, description, completed } = req.body;
@@ -114,8 +127,11 @@ router.route('/tasks/:taskId')
         }
     })
     // Delete specific task
-    .delete(async (req, res) => {
+    .delete(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+            
             // Parse request
             const { taskId } = req.params;
 
@@ -144,8 +160,11 @@ router.route('/tasks/:taskId')
 //#region '/tasks/:taskId/completion'
 router.route('/tasks/:taskId/completion')
     // Put a completion update to a specific task
-    .put(async (req, res) => {
+    .put(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+            
             // Parse request
             const { taskId } = req.params;
             const completedQuery = (req.query.completed ?? '').toLowerCase();

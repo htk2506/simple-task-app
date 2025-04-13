@@ -12,7 +12,7 @@ const helmet = require('helmet');
 const pgSession = require('connect-pg-simple')(session);
 
 const db = require('./utils/db');
-require('./utils/auth');
+const auth = require('./utils/auth');
 const tasksRouter = require('./routes/tasks-router');
 const authRouter = require('./routes/auth-router');
 
@@ -29,7 +29,7 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 86400000 // 1 day
+        maxAge: 86400000 * 3 // 7 day
     },
     store: new pgSession({
         pool: db.pool,

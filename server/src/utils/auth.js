@@ -65,3 +65,28 @@ passport.deserializeUser((userId, cb) => {
             cb(err);
         });
 });
+
+/**
+ * Middleware that checks authentication and sends an error if user is not authenticated.
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+const checkAuth = async (req, res, next) => {
+    try {
+        if (req.isAuthenticated()) {
+            next();
+        } else {
+            res.status(401);
+            res.send('You are not authenticated');
+        }
+    } catch (err) {
+        console.error(err);
+        res.status(500);
+        res.send(err.message);
+    }
+}
+
+module.exports = {
+    checkAuth
+}
