@@ -15,8 +15,11 @@ const router = express.Router();
 router.route('/')
     // GET test route
     .get(async (req, res) => {
-        const msg = 'Hello World';
-        res.send(msg);
+        if (req.isAuthenticated()) {
+            res.send(`Hello ${req.user.name}`)
+        } else {
+            res.send('Hello world')
+        }
     });
 //#endregion
 
@@ -32,7 +35,7 @@ router.route('/tasks')
             const { description, title } = req.body;
 
             // Query database
-            const insertedTask = await db.insertTask(null, title, description);
+            const insertedTask = await db.insertTask(userId, title, description);
 
             // Send inserted task
             res.status(201);
@@ -51,7 +54,7 @@ router.route('/tasks')
             const userId = req.user.user_id;
 
             // Query database
-            const tasks = await db.getTaskList(null);
+            const tasks = await db.getTaskList(userId);
 
             // Send tasks
             res.status(200);
@@ -72,12 +75,12 @@ router.route('/tasks/:taskId')
         try {
             // Get user ID
             const userId = req.user.user_id;
-            
+
             // Parse request
             const { taskId } = req.params;
 
             // Query database
-            const task = await db.getTaskForUser(null, taskId);
+            const task = await db.getTask(userId, taskId);
 
             // Send results
             if (!!task) {
@@ -101,13 +104,13 @@ router.route('/tasks/:taskId')
         try {
             // Get user ID
             const userId = req.user.user_id;
-            
+
             // Parse request
             const { taskId } = req.params;
             const { title, description, completed } = req.body;
 
             // Query database
-            const updatedTask = await db.updateTaskForUser(null, taskId, title, description, completed);
+            const updatedTask = await db.updateTask(userId, taskId, title, description, completed);
 
             // Send results
             if (!!updatedTask) {
@@ -131,12 +134,12 @@ router.route('/tasks/:taskId')
         try {
             // Get user ID
             const userId = req.user.user_id;
-            
+
             // Parse request
             const { taskId } = req.params;
 
             // Query database
-            const deletedTask = await db.deleteTask(null, taskId);
+            const deletedTask = await db.deleteTask(userId, taskId);
 
             // Send results
             if (!!deletedTask) {
@@ -164,7 +167,7 @@ router.route('/tasks/:taskId/completion')
         try {
             // Get user ID
             const userId = req.user.user_id;
-            
+
             // Parse request
             const { taskId } = req.params;
             const completedQuery = (req.query.completed ?? '').toLowerCase();
@@ -177,7 +180,7 @@ router.route('/tasks/:taskId/completion')
 
             if (isCompleted !== undefined) {
                 // Query database if query param was valid and parsed into isCompleted
-                const updatedTask = await db.markTaskCompletion(null, taskId, isCompleted);
+                const updatedTask = await db.markTaskCompletion(userId, taskId, isCompleted);
 
                 // Send results
                 if (!!updatedTask) {

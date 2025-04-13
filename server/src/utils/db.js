@@ -20,8 +20,6 @@ const poolQuery = (text, params, callback) => {
     return pool.query(text, params, callback);
 }
 
-// TODO: Use userId for each method
-
 /**
  * Insert a task to the database.
  * @param {string} userId 
@@ -31,45 +29,57 @@ const poolQuery = (text, params, callback) => {
  * @throws Throws errors related to database queries.
  */
 const insertTask = async (userId, title, description) => {
-    const queryResult = await poolQuery('INSERT INTO tasks (title,description) VALUES($1,$2) RETURNING *', [title, description]);
+    const queryResult = await poolQuery(
+        'INSERT INTO tasks (title,description,user_id) VALUES($1,$2,$3) RETURNING *',
+        [title, description, userId]);
+
     return queryResult.rows[0];
 }
 
 /**
  * Get all of a user's tasks.
  * @param {string} userId 
- * @returns Array of objects representing user's tasks.
+ * @returns {Promise} Array of objects representing user's tasks.
  * @throws Throws errors related to database queries.
  */
 const getTaskList = async (userId) => {
-    const queryResult = await poolQuery('SELECT * FROM tasks');
+    const queryResult = await poolQuery(
+        'SELECT * FROM tasks WHERE user_id=$1',
+        [userId]);
+
     return queryResult.rows;
 }
 
 /**
  * Get one of a user's tasks.
- * @param {string} userId - Make sure the task belongs to this user.
- * @param {string} taskId - ID of the task.
- * @returns The task.
+ * @param {string} userId 
+ * @param {string} taskId
+ * @returns {Promise} The task.
  * @throws Throws errors related to database queries.
  */
-const getTaskForUser = async (userId, taskId) => {
-    const queryResult = await poolQuery('SELECT * FROM tasks WHERE task_id=$1', [taskId]);
+const getTask = async (userId, taskId) => {
+    const queryResult = await poolQuery(
+        'SELECT * FROM tasks WHERE (task_id=$1 AND user_id=$2)',
+        [taskId, userId]);
+
     return queryResult.rows[0];
 }
 
 /**
- * Update one of a user's tasks.
+ * Update a task to the passed in values. Pass in old values if they should not change.
  * @param {string} userId 
  * @param {string} taskId 
  * @param {string} title - Should not be null. Pass in the old value even if it is unchanged.
  * @param {string} description - Pass in old value if it should not change.
  * @param {boolean} completed - Pass in old value if it should not change.
- * @returns The updated task.
+ * @returns {Promise} The updated task.
  * @throws Throws errors related to database queries.
  */
-const updateTaskForUser = async (userId, taskId, title, description, completed) => {
-    const queryResult = await poolQuery('UPDATE tasks SET title=$1,description=$2,completed=$3 WHERE task_id=$4 RETURNING *', [title, description, completed, taskId]);
+const updateTask = async (userId, taskId, title, description, completed) => {
+    const queryResult = await poolQuery(
+        'UPDATE tasks SET title=$1,description=$2,completed=$3 WHERE (task_id=$4 AND user_id=$5) RETURNING *',
+        [title, description, completed, taskId, userId]);
+
     return queryResult.rows[0];
 }
 
@@ -77,11 +87,14 @@ const updateTaskForUser = async (userId, taskId, title, description, completed) 
  * Delete a task.
  * @param {string} userId 
  * @param {string} taskId 
- * @returns The deleted task.
+ * @returns {Promise} The deleted task.
  * @throws Throws errors related to database queries.
  */
 const deleteTask = async (userId, taskId) => {
-    const queryResult = await poolQuery('DELETE FROM tasks WHERE task_id=$1 RETURNING *', [taskId]);
+    const queryResult = await poolQuery(
+        'DELETE FROM tasks WHERE (task_id=$1 AND user_id=$2) RETURNING *',
+        [taskId, userId]);
+
     return queryResult.rows[0];
 }
 
@@ -90,22 +103,25 @@ const deleteTask = async (userId, taskId) => {
  * @param {string} userId 
  * @param {string} taskId 
  * @param {boolean} isCompleted
- * @returns The updated task.
+ * @returns {Promise} The updated task.
  * @throws Throws errors related to database queries.
  */
 const markTaskCompletion = async (userId, taskId, isCompleted) => {
-    const queryResult = await poolQuery('UPDATE tasks SET completed=$1 WHERE task_id=$2 RETURNING *', [isCompleted, taskId]);
+    const queryResult = await poolQuery(
+        'UPDATE tasks SET completed=$1 WHERE (task_id=$2 AND user_id=$3) RETURNING *',
+        [isCompleted, taskId, userId]);
+
     return queryResult.rows[0];
 }
 
-// Export functions
+// Export pool and functions
 module.exports = {
     pool,
     poolQuery,
     insertTask,
     getTaskList,
-    getTaskForUser,
-    updateTaskForUser,
+    getTask,
+    updateTask,
     deleteTask,
     markTaskCompletion
 }
