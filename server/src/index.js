@@ -11,9 +11,10 @@ const passport = require('passport');
 const helmet = require('helmet');
 const pgSession = require('connect-pg-simple')(session);
 
+const db = require('./utils/db');
+require('./utils/auth');
 const tasksRouter = require('./routes/tasks-router');
 const authRouter = require('./routes/auth-router');
-const db = require('./utils/db')
 
 // Create the app
 const app = express();
