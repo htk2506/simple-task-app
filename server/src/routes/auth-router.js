@@ -13,9 +13,9 @@ const router = express.Router();
 router.route('/login/google')
     // GET logged in with Google authentication
     .get(async (req, res, next) => {
-        // Get the client's URL to redirect back to
-        const requestOrigin = req.get('host') || req.get('origin');
-        const redirectTo = requestOrigin ? `http://${requestOrigin}` : '/';
+        // Get the client's URL to redirect back to (this route must be used as a link to work)
+        const referer = req.get('Referer');
+        const redirectTo = referer ? referer : '/';
 
         // Use the authenticator and pass the redirection URL
         const authenticator = passport.authenticate('google', { state: { redirectTo } });
@@ -69,10 +69,10 @@ router.route('/logout')
                 console.error(err);
                 return next(err);
             }
-
-            // Redirect back to client
-            const requestOrigin = req.get('host') || req.get('origin');
-            const redirectTo = requestOrigin ? `http://${requestOrigin}` : '/';
+            
+            // Get the client's URL to redirect back to (this route must be used as a link to work)
+            const referer = req.get('Referer');
+            const redirectTo = referer ? referer : '/';
             res.redirect(redirectTo);
         });
     });
