@@ -9,13 +9,12 @@ function ListTasks() {
     const getTasks = async () => {
         try {
             const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks`;
-            const response = await fetch(url);
-            const responseJson = await response.json();
-
-            console.log(responseJson);
+            const response = await fetch(url, { method: 'GET', credentials: 'include' });
 
             // Handle server response
             if (response.ok) {
+                const responseJson = await response.json();
+                console.log(responseJson);
                 setTasks(responseJson);
             } else {
                 const responseText = await response.text();
@@ -31,7 +30,7 @@ function ListTasks() {
     const deleteTask = async (id) => {
         try {
             const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${id}`;
-            const response = await fetch(url, { method: "DELETE" });
+            const response = await fetch(url, { method: "DELETE", credentials: 'include' });
 
             // Handle server response
             if (response.ok) {
@@ -52,7 +51,7 @@ function ListTasks() {
         try {
             const completed = e.target.checked;
             const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${id}/completion?completed=${completed}`;
-            const response = await fetch(url, { method: "PUT" });
+            const response = await fetch(url, { method: "PUT", credentials: 'include' });
 
             // Handle server response
             if (response.ok) {
@@ -86,7 +85,7 @@ function ListTasks() {
                     checkedDefault={hideCompleted}
                     onChange={(e) => setHideCompleted(e.target.checked)}
                 />
-                <label className="form-check-label" for="hide-completed-checkbox">
+                <label className="form-check-label" htmlFor="hide-completed-checkbox">
                     Hide completed tasks
                 </label>
             </div>
