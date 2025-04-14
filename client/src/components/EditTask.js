@@ -20,14 +20,12 @@ function EditTask({ task }) {
         try {
             const url = `${process.env.REACT_APP_API_SERVER_BASE_URL}/tasks/${task.task_id}`;
             const body = { title, description, completed };
-            const response = await fetch(
-                url,
-                {
-                    method: "PUT",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(body)
-                }
-            );
+            const response = await fetch(url, {
+                method: "PUT",
+                credentials: 'include',
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(body)
+            });
 
             if (response.ok) {
                 // Refresh
@@ -104,7 +102,7 @@ function EditTask({ task }) {
                                     defaultChecked={completed}
                                     onChange={(e) => setCompleted(e.target.checked)}
                                 />
-                                <label className="form-check-label" for="task-completed-checkbox">
+                                <label className="form-check-label" htmlFor="task-completed-checkbox">
                                     Completed
                                 </label>
                             </div>

@@ -6,6 +6,7 @@
 require('dotenv').config();
 const express = require('express');
 const db = require('../utils/db');
+const { checkAuth } = require('../utils/auth');
 
 // Create the router
 const router = express.Router();
@@ -14,21 +15,27 @@ const router = express.Router();
 router.route('/')
     // GET test route
     .get(async (req, res) => {
-        const msg = 'Hello World';
-        res.send(msg);
+        if (req.isAuthenticated()) {
+            res.send(`Hello ${req.user.name}`)
+        } else {
+            res.send('Hello world')
+        }
     });
 //#endregion
 
 //#region '/tasks'
 router.route('/tasks')
     // POST a new task
-    .post(async (req, res) => {
+    .post(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { description, title } = req.body;
 
             // Query database
-            const insertedTask = await db.insertTask(null, title, description);
+            const insertedTask = await db.insertTask(userId, title, description);
 
             // Send inserted task
             res.status(201);
@@ -41,10 +48,13 @@ router.route('/tasks')
         }
     })
     // GET all tasks
-    .get(async (req, res) => {
+    .get(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Query database
-            const tasks = await db.getTaskList(null);
+            const tasks = await db.getTaskList(userId);
 
             // Send tasks
             res.status(200);
@@ -61,13 +71,16 @@ router.route('/tasks')
 //#region '/tasks/:taskId'
 router.route('/tasks/:taskId')
     // GET specific task
-    .get(async (req, res) => {
+    .get(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { taskId } = req.params;
 
             // Query database
-            const task = await db.getTaskForUser(null, taskId);
+            const task = await db.getTask(userId, taskId);
 
             // Send results
             if (!!task) {
@@ -87,14 +100,17 @@ router.route('/tasks/:taskId')
         }
     })
     // PUT an update to specific task
-    .put(async (req, res) => {
+    .put(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { taskId } = req.params;
             const { title, description, completed } = req.body;
 
             // Query database
-            const updatedTask = await db.updateTaskForUser(null, taskId, title, description, completed);
+            const updatedTask = await db.updateTask(userId, taskId, title, description, completed);
 
             // Send results
             if (!!updatedTask) {
@@ -114,13 +130,16 @@ router.route('/tasks/:taskId')
         }
     })
     // Delete specific task
-    .delete(async (req, res) => {
+    .delete(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { taskId } = req.params;
 
             // Query database
-            const deletedTask = await db.deleteTask(null, taskId);
+            const deletedTask = await db.deleteTask(userId, taskId);
 
             // Send results
             if (!!deletedTask) {
@@ -144,8 +163,11 @@ router.route('/tasks/:taskId')
 //#region '/tasks/:taskId/completion'
 router.route('/tasks/:taskId/completion')
     // Put a completion update to a specific task
-    .put(async (req, res) => {
+    .put(checkAuth, async (req, res) => {
         try {
+            // Get user ID
+            const userId = req.user.user_id;
+
             // Parse request
             const { taskId } = req.params;
             const completedQuery = (req.query.completed ?? '').toLowerCase();
@@ -158,7 +180,7 @@ router.route('/tasks/:taskId/completion')
 
             if (isCompleted !== undefined) {
                 // Query database if query param was valid and parsed into isCompleted
-                const updatedTask = await db.markTaskCompletion(null, taskId, isCompleted);
+                const updatedTask = await db.markTaskCompletion(userId, taskId, isCompleted);
 
                 // Send results
                 if (!!updatedTask) {
