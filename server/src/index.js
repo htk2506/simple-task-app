@@ -35,7 +35,8 @@ app.use(session({
     resave: false,
     saveUninitialized: true,
     cookie: {
-        maxAge: 86400000 * 3,
+        maxAge: 86400000 * 7,
+        domain: process.env.DOMAIN,
         sameSite: process.env.NODE_ENV === 'production' ? 'none' : undefined,
         secure: process.env.NODE_ENV === 'production' ? true : undefined,
     },

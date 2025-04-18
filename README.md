@@ -1,7 +1,7 @@
 # simple-task-app
 A simple task app using Postgres, Express, Passport, React, and Node.
 
-The [client](/client), [server](/server), and [database](/database) are each designed so that they can be deployed to different machines. See each folder's README for details on each part.
+This project consists of a [client](/client), [server](/server), and [database](/database). See each folder's README for details on each part. The client and server must be deployed to the same domain and have HTTPS enabled.
 
 ## References
 * freeCodeCamp's [PERN Stack Course](https://www.youtube.com/watch?v=ldYcgPKEZC8)
