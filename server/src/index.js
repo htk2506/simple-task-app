@@ -24,47 +24,27 @@ const app = express();
 // Middleware for whole app
 app.use(cors({
     origin: /.*/,
-    // origin: ['https://simple-task-app-server.fly.dev', 'https://simple-task-app-client.fly.dev', 'http://localhost:5000', 'http://localhost:3000'],
     credentials: true
 }));
 app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.enable('trust proxy');
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 86400000 * 3,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : undefined,
+        secure: process.env.NODE_ENV === 'production' ? true : undefined,
+    },
+    store: new pgSession({
+        pool: db.pool,
+        createTableIfMissing: true
+    })
+}));
 
-if (process.env.NODE_ENV === 'production') {
-    console.log('Production setup');
-    app.enable('trust proxy');
-    app.use(session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            maxAge: 86400000 * 3, // 7 days
-            sameSite: "None",
-            secure: true,
-            partitioned: true,
-            // httpOnly: true,
-        },
-        store: new pgSession({
-            pool: db.pool,
-            createTableIfMissing: true
-        })
-    }));
-} else {
-    app.use(session({
-        secret: process.env.SESSION_SECRET,
-        resave: false,
-        saveUninitialized: true,
-        cookie: {
-            maxAge: 86400000 * 3, // 7 days
-            httpOnly: false
-        },
-        store: new pgSession({
-            pool: db.pool,
-            createTableIfMissing: true
-        })
-    }));
-}
 
 app.use(passport.initialize());
 app.use(passport.authenticate('session'));
