@@ -24,7 +24,6 @@ const app = express();
 // Middleware for whole app
 app.use(cors({
     origin: /.*/,
-    // origin: ['https://simple-task-app-server.fly.dev', 'https://simple-task-app-client.fly.dev', 'http://localhost:5000', 'http://localhost:3000'],
     credentials: true
 }));
 app.use(helmet());
@@ -39,11 +38,9 @@ if (process.env.NODE_ENV === 'production') {
         resave: false,
         saveUninitialized: true,
         cookie: {
-            maxAge: 86400000 * 3, // 7 days
+            maxAge: 86400000 * 3,
             sameSite: "None",
             secure: true,
-            partitioned: true,
-            // httpOnly: true,
         },
         store: new pgSession({
             pool: db.pool,
@@ -56,8 +53,7 @@ if (process.env.NODE_ENV === 'production') {
         resave: false,
         saveUninitialized: true,
         cookie: {
-            maxAge: 86400000 * 3, // 7 days
-            httpOnly: false
+            maxAge: 86400000 * 3,
         },
         store: new pgSession({
             pool: db.pool,
