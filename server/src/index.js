@@ -37,8 +37,9 @@ app.use(session({
     cookie: {
         maxAge: 86400000 * 7,
         domain: process.env.DOMAIN,
-        sameSite: process.env.NODE_ENV === 'production' ? 'none' : undefined,
+        sameSite: process.env.NODE_ENV === 'production' ? 'lax' : undefined,
         secure: process.env.NODE_ENV === 'production' ? true : undefined,
+        httpOnly: true
     },
     store: new pgSession({
         pool: db.pool,
