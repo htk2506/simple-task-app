@@ -11,3 +11,5 @@ The server's access to the database is done through the POSTGRES_URI environment
 > POSTGRES_URI=postgres://{username}:{password}@{hostname}:{port}/{database}
 
 When deploying the Postgres database with Fly.io, but using the server elsewhere, you need to [enable external connections](https://fly.io/docs/postgres/connecting/connecting-external/) for the Postgres app. 
+
+![database diagram](database_diagram.png)
