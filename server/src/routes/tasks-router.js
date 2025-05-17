@@ -35,7 +35,8 @@ router.route('/tasks')
             const { description, title } = req.body;
 
             // Query database
-            const insertedTask = await db.insertTask(userId, title, description);
+            const queryResult = await db.insertTask(userId, title, description);
+            const insertedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send inserted task
             res.status(201);
@@ -54,7 +55,8 @@ router.route('/tasks')
             const userId = req.user.user_id;
 
             // Query database
-            const tasks = await db.getTaskList(userId);
+            const queryResult = await db.getTaskList(userId);
+            const tasks = queryResult.map(({ task_id, title, description, completed }) => ({ task_id, title, description, completed }));
 
             // Send tasks
             res.status(200);
@@ -80,7 +82,8 @@ router.route('/tasks/:taskId')
             const { taskId } = req.params;
 
             // Query database
-            const task = await db.getTask(userId, taskId);
+            const queryResult = await db.getTask(userId, taskId);
+            const task = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!task) {
@@ -110,7 +113,8 @@ router.route('/tasks/:taskId')
             const { title, description, completed } = req.body;
 
             // Query database
-            const updatedTask = await db.updateTask(userId, taskId, title, description, completed);
+            const queryResult = await db.updateTask(userId, taskId, title, description, completed);
+            const updatedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!updatedTask) {
@@ -139,7 +143,8 @@ router.route('/tasks/:taskId')
             const { taskId } = req.params;
 
             // Query database
-            const deletedTask = await db.deleteTask(userId, taskId);
+            const queryResult = await db.deleteTask(userId, taskId);
+            const deletedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!deletedTask) {
@@ -180,7 +185,8 @@ router.route('/tasks/:taskId/completion')
 
             if (isCompleted !== undefined) {
                 // Query database if query param was valid and parsed into isCompleted
-                const updatedTask = await db.markTaskCompletion(userId, taskId, isCompleted);
+                const queryResult = await db.markTaskCompletion(userId, taskId, isCompleted);
+                const updatedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
                 // Send results
                 if (!!updatedTask) {
