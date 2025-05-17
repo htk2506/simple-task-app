@@ -122,7 +122,7 @@ const markTaskCompletion = async (userId, taskId, isCompleted) => {
  */
 const getUser = async (userId) => {
     const queryResult = await poolQuery(
-        'SELECT user_id,name FROM users WHERE user_id=$1',
+        'SELECT * FROM users WHERE user_id=$1',
         [userId])
 
     return queryResult.rows[0];
@@ -136,7 +136,7 @@ const getUser = async (userId) => {
  */
 const getUserWithGoogleId = async (googleId) => {
     const queryResult = await poolQuery(
-        'SELECT user_id,name FROM users WHERE google_id=$1',
+        'SELECT * FROM users WHERE google_id=$1',
         [googleId]);
 
     return queryResult.rows[0];
@@ -151,7 +151,7 @@ const getUserWithGoogleId = async (googleId) => {
  */
 const insertUserWithGoogleId = async (name, googleId) => {
     const queryResult = await poolQuery(
-        'INSERT INTO users (name,google_id) VALUES ($1,$2) RETURNING user_id,name',
+        'INSERT INTO users (name,google_id) VALUES ($1,$2) RETURNING *',
         [name, googleId]);
 
     return queryResult.rows[0];

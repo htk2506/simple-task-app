@@ -1,10 +1,9 @@
 /**
- * Configures Passport for authentication.
+ * Functions and middleware for Passport authentication.
  */
 
 // Import modules
 require('dotenv').config();
-const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc')
 const db = require('../utils/db');
 
@@ -41,24 +40,32 @@ const googleStrategy = new GoogleStrategy({
             return cb(err);
         })
 });
-passport.use(googleStrategy);
 
-// Serialize the user as the id
-passport.serializeUser((user, cb) => {
-    cb(null, user.user_id);
-});
+/**
+ * Configure Passport.
+ * @param {*} passport The Passport object.
+ */
+const configurePassport = (passport) => {
 
-// Deserialize the user as info from database
-passport.deserializeUser((userId, cb) => {
-    db.getUser(userId)
-        .then(user => {
-            cb(null, user);
-        })
-        .catch(err => {
-            console.error(err);
-            cb(err);
-        });
-});
+    passport.use('google', googleStrategy);
+
+    // Serialize the user as the id
+    passport.serializeUser((user, cb) => {
+        return cb(null, user.user_id);
+    });
+
+    // Deserialize the user as info from database
+    passport.deserializeUser((userId, cb) => {
+        db.getUser(userId)
+            .then(({ user_id, name }) => {
+                return cb(null, { user_id, name });
+            })
+            .catch(err => {
+                console.error(err);
+                return cb(err);
+            });
+    });
+}
 
 /**
  * Middleware that checks authentication and sends an error if user is not authenticated.
@@ -69,18 +76,19 @@ passport.deserializeUser((userId, cb) => {
 const checkAuth = async (req, res, next) => {
     try {
         if (req.isAuthenticated()) {
-            next();
+            return next();
         } else {
             res.status(401);
-            res.send('You are not authenticated');
+            return res.send('You are not authenticated');
         }
     } catch (err) {
         console.error(err);
         res.status(500);
-        res.send(err.message);
+        return res.send(err.message);
     }
 }
 
 module.exports = {
+    configurePassport,
     checkAuth
 }
