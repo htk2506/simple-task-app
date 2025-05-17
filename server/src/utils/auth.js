@@ -16,21 +16,22 @@ const googleStrategy = new GoogleStrategy({
 }, function verify(issuer, profile, cb) {
     // Query database for the user
     db.getUserWithGoogleId(profile.id)
-        .then(user => {
-            if (!user) {
+        .then(queryResult => {
+            if (!queryResult) {
                 // No user info so attempt to add new user to database
                 return db.insertUserWithGoogleId(profile.displayName, profile.id);
             } else {
                 // Return the query result and have it be handled by next in chain
-                return user;
+                return queryResult;
             }
         })
-        .then(user => {
-            if (!user) {
+        .then(queryResult => {
+            if (!queryResult) {
                 // No user
                 return cb(null, false)
             } else {
                 // Return user
+                const user = (({ user_id, name }) => ({ user_id, name }))(queryResult);
                 return cb(null, user);
             }
         })
@@ -57,8 +58,9 @@ const configurePassport = (passport) => {
     // Deserialize the user as info from database
     passport.deserializeUser((userId, cb) => {
         db.getUser(userId)
-            .then(({ user_id, name }) => {
-                return cb(null, { user_id, name });
+            .then((queryResult) => {
+                const user = (({ user_id, name }) => ({ user_id, name }))(queryResult);
+                return cb(null, user);
             })
             .catch(err => {
                 console.error(err);
@@ -69,9 +71,9 @@ const configurePassport = (passport) => {
 
 /**
  * Middleware that checks authentication and sends an error if user is not authenticated.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req Express request object.
+ * @param {*} res Express response object.
+ * @param {*} next Express next callback.
  */
 const checkAuth = async (req, res, next) => {
     try {
