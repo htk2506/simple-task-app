@@ -16,9 +16,9 @@ router.route('/')
     // GET test route
     .get(async (req, res) => {
         if (req.isAuthenticated()) {
-            res.send(`Hello ${req.user.name}`)
+            return res.send(`Hello ${req.user.name}`)
         } else {
-            res.send('Hello world')
+            return res.send('Hello world')
         }
     });
 //#endregion
@@ -35,16 +35,17 @@ router.route('/tasks')
             const { description, title } = req.body;
 
             // Query database
-            const insertedTask = await db.insertTask(userId, title, description);
+            const queryResult = await db.insertTask(userId, title, description);
+            const insertedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send inserted task
             res.status(201);
-            res.json(insertedTask);
+            return res.json(insertedTask);
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     })
     // GET all tasks
@@ -54,16 +55,17 @@ router.route('/tasks')
             const userId = req.user.user_id;
 
             // Query database
-            const tasks = await db.getTaskList(userId);
+            const queryResult = await db.getTaskList(userId);
+            const tasks = queryResult.map(({ task_id, title, description, completed }) => ({ task_id, title, description, completed }));
 
             // Send tasks
             res.status(200);
-            res.json(tasks);
+            return res.json(tasks);
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     });
 //#endregion
@@ -80,23 +82,24 @@ router.route('/tasks/:taskId')
             const { taskId } = req.params;
 
             // Query database
-            const task = await db.getTask(userId, taskId);
+            const queryResult = await db.getTask(userId, taskId);
+            const task = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!task) {
                 // Return the found task
                 res.status(200);
-                res.json(task);
+                return res.json(task);
             } else {
                 // No task found
                 res.status(404);
-                res.send('Task not found');
+                return res.send('Task not found');
             }
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     })
     // PUT an update to specific task
@@ -110,23 +113,24 @@ router.route('/tasks/:taskId')
             const { title, description, completed } = req.body;
 
             // Query database
-            const updatedTask = await db.updateTask(userId, taskId, title, description, completed);
+            const queryResult = await db.updateTask(userId, taskId, title, description, completed);
+            const updatedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!updatedTask) {
                 // Return the updated task
                 res.status(200);
-                res.json(updatedTask);
+                return res.json(updatedTask);
             } else {
                 // No task updated
                 res.status(500);
-                res.send('No task updated');
+                return res.send('No task updated');
             }
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     })
     // Delete specific task
@@ -139,23 +143,24 @@ router.route('/tasks/:taskId')
             const { taskId } = req.params;
 
             // Query database
-            const deletedTask = await db.deleteTask(userId, taskId);
+            const queryResult = await db.deleteTask(userId, taskId);
+            const deletedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
             // Send results
             if (!!deletedTask) {
                 // Return the updated task
                 res.status(200);
-                res.json(deletedTask);
+                return res.json(deletedTask);
             } else {
                 // No task deleted
                 res.status(500);
-                res.send('No task deleted');
+                return res.send('No task deleted');
             }
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     });
 //#endregion
@@ -180,28 +185,29 @@ router.route('/tasks/:taskId/completion')
 
             if (isCompleted !== undefined) {
                 // Query database if query param was valid and parsed into isCompleted
-                const updatedTask = await db.markTaskCompletion(userId, taskId, isCompleted);
+                const queryResult = await db.markTaskCompletion(userId, taskId, isCompleted);
+                const updatedTask = (({ task_id, title, description, completed }) => ({ task_id, title, description, completed }))(queryResult);
 
                 // Send results
                 if (!!updatedTask) {
                     // Return the updated task
                     res.status(200);
-                    res.json(updatedTask);
+                    return res.json(updatedTask);
                 } else {
                     // No task updated
                     res.status(500);
-                    res.send('No task updated');
+                    return res.send('No task updated');
                 }
             } else {
                 // Send error message about invalid query param
                 res.status(400);
-                res.send('Provide "completed" query param that is either "true" or "false"');
+                return res.send('Provide "completed" query param that is either "true" or "false"');
             }
         } catch (err) {
             // Send error
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     });
 //#endregion

@@ -67,7 +67,8 @@ CREATE TABLE public.tasks (
     title character varying(150) NOT NULL,
     description character varying(500),
     completed boolean DEFAULT false NOT NULL,
-    user_id uuid NOT NULL
+    user_id uuid NOT NULL,
+    CONSTRAINT chk_title_length_gt_0 CHECK ((length(TRIM(BOTH FROM title)) > 0))
 );
 
 

@@ -50,6 +50,7 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.authenticate('session'));
+auth.configurePassport(passport);
 
 // Add the routes
 app.use(tasksRouter);

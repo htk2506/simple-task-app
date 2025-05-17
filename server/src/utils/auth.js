@@ -1,10 +1,9 @@
 /**
- * Configures Passport for authentication.
+ * Functions and middleware for Passport authentication.
  */
 
 // Import modules
 require('dotenv').config();
-const passport = require('passport');
 const GoogleStrategy = require('passport-google-oidc')
 const db = require('../utils/db');
 
@@ -17,21 +16,22 @@ const googleStrategy = new GoogleStrategy({
 }, function verify(issuer, profile, cb) {
     // Query database for the user
     db.getUserWithGoogleId(profile.id)
-        .then(user => {
-            if (!user) {
+        .then(queryResult => {
+            if (!queryResult) {
                 // No user info so attempt to add new user to database
                 return db.insertUserWithGoogleId(profile.displayName, profile.id);
             } else {
                 // Return the query result and have it be handled by next in chain
-                return user;
+                return queryResult;
             }
         })
-        .then(user => {
-            if (!user) {
+        .then(queryResult => {
+            if (!queryResult) {
                 // No user
                 return cb(null, false)
             } else {
                 // Return user
+                const user = (({ user_id, name }) => ({ user_id, name }))(queryResult);
                 return cb(null, user);
             }
         })
@@ -41,46 +41,56 @@ const googleStrategy = new GoogleStrategy({
             return cb(err);
         })
 });
-passport.use(googleStrategy);
 
-// Serialize the user as the id
-passport.serializeUser((user, cb) => {
-    cb(null, user.user_id);
-});
+/**
+ * Configure Passport.
+ * @param {*} passport The Passport object.
+ */
+const configurePassport = (passport) => {
 
-// Deserialize the user as info from database
-passport.deserializeUser((userId, cb) => {
-    db.getUser(userId)
-        .then(user => {
-            cb(null, user);
-        })
-        .catch(err => {
-            console.error(err);
-            cb(err);
-        });
-});
+    passport.use('google', googleStrategy);
+
+    // Serialize the user as the id
+    passport.serializeUser((user, cb) => {
+        return cb(null, user.user_id);
+    });
+
+    // Deserialize the user as info from database
+    passport.deserializeUser((userId, cb) => {
+        db.getUser(userId)
+            .then((queryResult) => {
+                const user = (({ user_id, name }) => ({ user_id, name }))(queryResult);
+                return cb(null, user);
+            })
+            .catch(err => {
+                console.error(err);
+                return cb(err);
+            });
+    });
+}
 
 /**
  * Middleware that checks authentication and sends an error if user is not authenticated.
- * @param {*} req 
- * @param {*} res 
- * @param {*} next 
+ * @param {*} req Express request object.
+ * @param {*} res Express response object.
+ * @param {*} next Express next callback.
  */
 const checkAuth = async (req, res, next) => {
     try {
         if (req.isAuthenticated()) {
-            next();
+            return next();
         } else {
             res.status(401);
-            res.send('You are not authenticated');
+            return res.send('You are not authenticated');
         }
     } catch (err) {
         console.error(err);
         res.status(500);
-        res.send(err.message);
+        return res.send(err.message);
     }
 }
 
 module.exports = {
+    configurePassport,
     checkAuth
 }

@@ -19,7 +19,7 @@ router.route('/login/google')
 
         // Use the authenticator and pass the redirection URL
         const authenticator = passport.authenticate('google', { state: { redirectTo } });
-        authenticator(req, res, next);
+        return authenticator(req, res, next);
     });
 
 // Callback route used by Google authentication
@@ -33,11 +33,11 @@ router.route('/oauth2/redirect/google')
             try {
                 // Redirect back to client
                 redirectTo = req.authInfo.state.redirectTo || '/';
-                res.redirect(redirectTo);
+                return res.redirect(redirectTo);
             } catch (err) {
                 console.error(err)
                 res.status(500);
-                res.send(err.message);
+                return res.send(err.message);
             }
         }
     );
@@ -48,16 +48,16 @@ router.route('/user-info')
         try {
             if (req.isAuthenticated()) {
                 res.status(200);
-                res.json(req.user);
+                return res.json(req.user);
             } else {
                 res.status(401);
-                res.send('You are not authenticated');
+                return res.send('You are not authenticated');
             }
         }
         catch (err) {
             console.error(err);
             res.status(500);
-            res.send(err.message);
+            return res.send(err.message);
         }
     });
 
@@ -73,7 +73,7 @@ router.route('/logout')
             // Get the client's URL to redirect back to (this route must be used as a link to work)
             const referer = req.get('Referer');
             const redirectTo = referer ? referer : '/';
-            res.redirect(redirectTo);
+            return res.redirect(redirectTo);
         });
     });
 
